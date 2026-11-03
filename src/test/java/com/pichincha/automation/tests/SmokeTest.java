@@ -14,10 +14,12 @@ public class SmokeTest extends BaseTest {
     public void sesionAndroidActiva() {
         String platform = driver.getCapabilities()
                 .getCapability("platformName").toString();
-        Assert.assertEquals(platform.toLowerCase(), "android",
-                "La plataforma de la sesion deberia ser Android");
+        paso("Verificar plataforma Android", () ->
+                Assert.assertEquals(platform.toLowerCase(), "android",
+                        "La plataforma de la sesion deberia ser Android"));
 
-        Assert.assertNotNull(driver.getSessionId(),
-                "La sesion de Appium deberia estar activa");
+        paso("Verificar sesion Appium activa", () ->
+                Assert.assertNotNull(driver.getSessionId(),
+                        "La sesion de Appium deberia estar activa"));
     }
 }
