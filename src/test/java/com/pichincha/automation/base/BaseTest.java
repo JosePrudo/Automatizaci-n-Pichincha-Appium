@@ -20,6 +20,27 @@ public abstract class BaseTest {
 
     @BeforeMethod(alwaysRun = true)
     public void setUp() throws MalformedURLException {
+        driver = new AndroidDriver(getServerUrl(), createOptions());
+        driver.manage().timeouts().implicitlyWait(
+                Duration.ofSeconds(ConfigReader.getInt("implicitWait", 10)));
+    }
+
+    protected UiAutomator2Options createOptions() {
+        UiAutomator2Options options = createBaseOptions();
+
+        String appPackage = ConfigReader.get("appPackage");
+        String appActivity = ConfigReader.get("appActivity");
+        if (appPackage != null && !appPackage.isBlank()) {
+            options.setAppPackage(appPackage);
+        }
+        if (appActivity != null && !appActivity.isBlank()) {
+            options.setAppActivity(appActivity);
+        }
+
+        return options;
+    }
+
+    protected UiAutomator2Options createBaseOptions() {
         UiAutomator2Options options = new UiAutomator2Options()
                 .setPlatformName(ConfigReader.get("platformName", "Android"))
                 .setAutomationName(ConfigReader.get("automationName", "UiAutomator2"))
@@ -32,21 +53,12 @@ public abstract class BaseTest {
             options.setPlatformVersion(platformVersion);
         }
 
-        String appPackage = ConfigReader.get("appPackage");
-        String appActivity = ConfigReader.get("appActivity");
-        if (appPackage != null && !appPackage.isBlank()) {
-            options.setAppPackage(appPackage);
-        }
-        if (appActivity != null && !appActivity.isBlank()) {
-            options.setAppActivity(appActivity);
-        }
+        return options;
+    }
 
-        URL serverUrl = URI.create(
+    protected URL getServerUrl() throws MalformedURLException {
+        return URI.create(
                 ConfigReader.get("appium.server.url", "http://127.0.0.1:4723")).toURL();
-
-        driver = new AndroidDriver(serverUrl, options);
-        driver.manage().timeouts().implicitlyWait(
-                Duration.ofSeconds(ConfigReader.getInt("implicitWait", 10)));
     }
 
     @AfterMethod(alwaysRun = true)

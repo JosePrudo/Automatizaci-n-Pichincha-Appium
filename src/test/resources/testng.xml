@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 <suite name="Suite Pichincha Appium" verbose="1">
-    <test name="Pruebas de humo">
+    <test name="Pruebas móviles">
         <classes>
             <class name="com.pichincha.automation.tests.SmokeTest"/>
+            <class name="com.pichincha.automation.tests.ProyectoViviendaTest"/>
         </classes>
     </test>
 </suite>
