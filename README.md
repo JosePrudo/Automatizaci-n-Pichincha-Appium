@@ -171,6 +171,28 @@ como certificado de usuario desde **Ajustes > Seguridad y privacidad > Más segu
 privacidad > Seguridad > Cifrado y credenciales > Instalar un certificado > Certificado de CA**.
 Android puede requerir un PIN de pantalla para instalarlo. No desactives la validación TLS.
 
+## Pipeline GitHub Actions
+
+El workflow `.github/workflows/appium.yml` se ejecuta manualmente desde
+**Actions > Pruebas Appium Android > Run workflow** o con:
+
+```shell
+gh workflow run appium.yml --ref main
+```
+
+Usa un runner Ubuntu efimero, Java 25, Node.js 22, Appium 3.8.0, UiAutomator2 8.7.1
+y un emulador Android 15/API 35 con Chrome. Valida el generador de reportes y ejecuta
+el flujo completo, incluido el envio real al servicio del entorno de pruebas.
+No se ejecuta automaticamente en cada push para evitar envios repetidos.
+En CI `chrome.useRunningApp=false` permite a ChromeDriver preparar el navegador nuevo;
+localmente se conserva el comportamiento anterior. Se mantiene la pausa de 1,5 segundos.
+
+El resultado se publica como tabla en el resumen de la ejecucion. Por ser un repositorio
+publico, no se suben reportes HTML, capturas ni logs del formulario o del servicio.
+Los archivos completos quedan solo en el runner y desaparecen al destruirse.
+Un fallo de preparacion, prueba o envio mantiene el pipeline fallido, sin ignorarlo.
+Los certificados corporativos locales no se necesitan ni se copian al runner.
+
 ## Reporte de la ultima ejecucion
 
 Cada `mvn test` (tambien con `-Dtest=ProyectoViviendaTest`) genera automaticamente

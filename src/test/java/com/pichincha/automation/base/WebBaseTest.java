@@ -17,6 +17,10 @@ public abstract class WebBaseTest extends BaseTest {
     @Override
     @BeforeMethod(alwaysRun = true)
     public void setUp() throws MalformedURLException {
+        if (!Boolean.parseBoolean(ConfigReader.get("chrome.useRunningApp", "true"))) {
+            super.setUp();
+            return;
+        }
         UiAutomator2Options inicioChrome = createBaseOptions()
                 .setAppPackage("com.android.chrome")
                 .setAppActivity("com.google.android.apps.chrome.Main")
@@ -36,10 +40,12 @@ public abstract class WebBaseTest extends BaseTest {
     protected UiAutomator2Options createOptions() {
         UiAutomator2Options options = createBaseOptions();
         options.setCapability("browserName", ConfigReader.get("browserName", "Chrome"));
-        options.setNoReset(true);
+        boolean usarChromeAbierto =
+                Boolean.parseBoolean(ConfigReader.get("chrome.useRunningApp", "true"));
+        options.setNoReset(usarChromeAbierto);
         options.setCapability("appium:dontStopAppOnReset", true);
         options.setCapability("appium:shouldTerminateApp", false);
-        options.setCapability("appium:chromeUseRunningApp", true);
+        options.setCapability("appium:chromeUseRunningApp", usarChromeAbierto);
         return options;
     }
 }
