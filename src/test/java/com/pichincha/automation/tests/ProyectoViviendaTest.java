@@ -7,6 +7,8 @@ import com.pichincha.automation.pages.SituacionFinancieraPage;
 import com.pichincha.automation.pages.PersonalizarCreditoPage;
 import com.pichincha.automation.pages.ResultadosPage;
 import com.pichincha.automation.pages.CapacidadRealPage;
+import com.pichincha.automation.pages.ContactoPage;
+import com.pichincha.automation.pages.ConfirmacionPage;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -15,7 +17,7 @@ import java.time.LocalDate;
 
 public class ProyectoViviendaTest extends WebBaseTest {
 
-    @Test(description = "Completa vivienda, finanzas, personalizacion, resultados y capacidad real hasta Contacto")
+    @Test(description = "Completa la simulacion hipotecaria hasta Contacto, Confirmacion y respuesta del envio")
     public void completarProyectoDeVivienda() {
         paso("Abrir el simulador hipotecario en Chrome Android", () -> driver.get(ConfigReader.get(
                 "web.base.url",
@@ -159,6 +161,44 @@ public class ProyectoViviendaTest extends WebBaseTest {
         paso("Pulsar Siguiente y validar Quiero que me Contacten", () -> {
             capacidad.continuar();
             Assert.assertTrue(capacidad.contactoVisible(), "Debe mostrarse Quiero que me Contacten");
+        });
+
+        ContactoPage contacto = new ContactoPage(driver, espera);
+        paso("Seleccionar horario de contacto: Mañana", () -> {
+            contacto.seleccionarManana();
+            Assert.assertTrue(contacto.mananaSeleccionada(), "Debe quedar seleccionado Mañana");
+        });
+        paso("Seleccionar medio de contacto: WhatsApp", () -> {
+            contacto.seleccionarWhatsApp();
+            Assert.assertTrue(contacto.whatsAppSeleccionado(), "Debe quedar seleccionado WhatsApp");
+        });
+        paso("Marcar Quiero recibir informacion de otros productos del banco", () -> {
+            contacto.marcarInformacionProductos();
+            Assert.assertTrue(contacto.informacionProductosMarcada(),
+                    "Debe quedar marcada la opcion de informacion de productos");
+        });
+        capturarEvidencia("Preferencias de contacto antes de Siguiente");
+        paso("Pulsar Siguiente y validar Confirmacion", () -> {
+            contacto.continuar();
+            Assert.assertTrue(contacto.confirmacionVisible(), "Debe mostrarse Confirmacion");
+        });
+
+        ConfirmacionPage confirmacion = new ConfirmacionPage(driver, espera);
+        paso("Confirmar que toda la informacion esta correcta y completa", () -> {
+            confirmacion.confirmarInformacion();
+            Assert.assertTrue(confirmacion.informacionConfirmada(),
+                    "Debe quedar marcada la confirmacion de informacion");
+        });
+        capturarEvidencia("Confirmacion antes de Aceptar y Enviar");
+        paso("Pulsar Aceptar y Enviar y esperar respuesta", confirmacion::aceptarYEnviar);
+        capturarEvidencia("Respuesta del envio de la simulacion");
+        paso("Pulsar Aceptar final y validar envio exitoso", () -> {
+            boolean exitoso = confirmacion.envioExitoso();
+            String respuesta = confirmacion.respuestaDelEnvio();
+            confirmacion.aceptarRespuesta();
+            Assert.assertTrue(confirmacion.simuladorReiniciado(),
+                    "Aceptar debe cerrar la respuesta y reiniciar el simulador");
+            Assert.assertTrue(exitoso, "El servidor no confirmo un envio exitoso: " + respuesta);
         });
     }
 }

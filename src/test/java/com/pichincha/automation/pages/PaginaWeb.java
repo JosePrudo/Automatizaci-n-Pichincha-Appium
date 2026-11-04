@@ -19,7 +19,9 @@ public abstract class PaginaWeb {
     }
 
     protected WebElement mostrar(By selector) {
-        WebElement elemento = wait.until(ExpectedConditions.visibilityOfElementLocated(selector));
+        WebElement elemento = wait.until(ExpectedConditions.presenceOfElementLocated(selector));
+        encuadrar(elemento);
+        wait.until(ExpectedConditions.visibilityOf(elemento));
         driver.executeScript("""
                 if (document.activeElement && document.activeElement !== arguments[0]) {
                     document.activeElement.blur();

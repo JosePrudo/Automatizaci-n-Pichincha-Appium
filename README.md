@@ -38,12 +38,23 @@ plazo **20 años** y cuota **Fija**. Comprueba los valores, pulsa **Siguiente**,
 En **Tu capacidad real** completa nombre, documento, correo y telefono con los datos
 del escenario, marca la autorizacion de consulta crediticia, ingresa **3** dependientes
 y la empresa **SoftwareOne**. Valida cada campo sin volver a resaltarlo y pulsa
-**Siguiente** hasta **Quiero que me Contacten**. No completa ni envia la seccion Contacto.
+**Siguiente** hasta **Quiero que me Contacten**.
 Los Page Objects son `PersonalizarCreditoPage`, `ResultadosPage` y `CapacidadRealPage`.
 Las entradas conservan su orden, la pausa de 1,5 segundos y una sola entrada por paso
 en el reporte, con capturas adicionales de personalizacion, resultados y capacidad real.
 Las capturas de capacidad real contienen los datos introducidos; no compartas los
 reportes sin revisarlos y usa este escenario solo en el entorno de pruebas autorizado.
+
+En **Quiero que me Contacten** selecciona **Mañana**, **WhatsApp** y
+**Quiero recibir informacion de otros productos del banco**, sin marcar consentimientos
+adicionales no solicitados. Pulsa **Siguiente**, marca en **Confirmacion** que toda la
+informacion es correcta y completa y pulsa **Aceptar y Enviar**.
+Este boton envia realmente la simulacion al servicio del entorno configurado.
+La prueba espera la respuesta, toma una captura y pulsa el **Aceptar** final.
+Comprueba que el envio sea exitoso y que el simulador vuelva a su primer paso.
+Si el servidor muestra un error, se acepta igualmente el mensaje para cerrar el flujo,
+pero la prueba falla con su detalle: cerrar el mensaje no se considera un envio exitoso.
+Los controles estan encapsulados en `ContactoPage` y `ConfirmacionPage`.
 
 Para ejecutar únicamente este flujo:
 
