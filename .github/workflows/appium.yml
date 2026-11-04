@@ -77,9 +77,35 @@ jobs:
                   "",
                   "Fallos de configuracion: " + str(len(root.findall(".//test-method[@is-config='true'][@status='FAIL']"))),
               ]
+              for method in root.findall(".//test-method[@status='FAIL']"):
+                  exception = method.find("exception")
+                  lines += ["", "Metodo fallido: `" + method.get("name", "") + "`",
+                            "Tipo: `" + (exception.get("class", "") if exception is not None else "desconocido") + "`"]
+                  message = "".join(exception.itertext()) if exception is not None else ""
+                  categories = {
+                      "chromedriver": "Problema de ChromeDriver o compatibilidad de Chrome.",
+                      "chrome not reachable": "Chrome no esta disponible.",
+                      "timed out": "Se agoto un tiempo de espera.",
+                      "timeout": "Se agoto un tiempo de espera.",
+                      "not been started": "La sesion no pudo iniciarse.",
+                      "no such element": "No se encontro un control esperado.",
+                      "visibility of element": "Un control esperado no fue visible.",
+                      "0 unknown error": "El servicio de envio devolvio un error de red.",
+                      "el servidor no confirmo": "El envio no fue confirmado como exitoso.",
+                  }
+                  for token, description in categories.items():
+                      if token in message.lower():
+                          lines += [description]
+                  if method.get("is-config") == "true" and method.get("name") == "setUp" and exception is not None:
+                      first_line = (exception.findtext("message") or "").strip().splitlines()
+                      if first_line:
+                          import re
+                          diagnostic = re.sub(r"https?://\S+", "[URL]", first_line[0])[:600]
+                          lines += ["Diagnostico de preparacion: " + diagnostic]
           else:
               lines += ["No se genero un resultado funcional. Revisa las etapas de preparacion."]
           lines += ["", "No se publican capturas, HTML, datos del formulario ni logs del servicio en este repositorio publico."]
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as output:
               output.write("\n".join(lines) + "\n")
+          print("\n".join(lines))
           PY
