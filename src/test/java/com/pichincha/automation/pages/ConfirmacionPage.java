@@ -10,6 +10,7 @@ public class ConfirmacionPage extends PaginaWeb {
 
     private static final By CONFIRM_INFORMATION = By.id("confirmInformation");
     private static final By SUBMIT = By.xpath("//button[normalize-space()='Aceptar y Enviar']");
+    private static final By CANCEL = By.xpath("//button[normalize-space()='Cancelar']");
     private static final By RESPONSE_TITLE =
             By.xpath("//h3[normalize-space()='¡Simulación Enviada!' or normalize-space()='Error en el Envío']");
     private static final By ACCEPT = By.xpath("//button[normalize-space()='Aceptar']");
@@ -34,6 +35,10 @@ public class ConfirmacionPage extends PaginaWeb {
     public void aceptarYEnviar() {
         campoInteractuable(SUBMIT).click();
         mostrar(RESPONSE_TITLE);
+    }
+
+    public void cancelar() {
+        campoInteractuable(CANCEL).click();
     }
 
     public boolean envioExitoso() {
